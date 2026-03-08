@@ -1,23 +1,13 @@
-"use client";
-
 import { useState, useMemo } from "react";
-import { dispensaries, categories } from "@/data/dispensaries";
+import { dispensaries, categories } from "../data/dispensaries";
 
-export default function ComparePage() {
+export default function Compare() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "price-low" | "price-high">("price-low");
+  const [sortBy, setSortBy] = useState("price-low");
 
-  // Build comparison data: group products by name across dispensaries
   const comparisons = useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        name: string;
-        category: string;
-        entries: { dispensary: string; price: number; thc?: string; weight?: string; strain?: string }[];
-      }
-    >();
+    const map = new Map();
 
     dispensaries.forEach((d) =>
       d.products.forEach((p) => {
@@ -85,14 +75,12 @@ export default function ComparePage() {
           className="border border-stone-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           {categories.map((cat) => (
-            <option key={cat.value} value={cat.value}>
-              {cat.label}
-            </option>
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
           ))}
         </select>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as "name" | "price-low" | "price-high")}
+          onChange={(e) => setSortBy(e.target.value)}
           className="border border-stone-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="price-low">Price: Low to High</option>
@@ -119,10 +107,10 @@ export default function ComparePage() {
                     <div className="flex gap-3 text-sm text-stone-500 mt-1">
                       <span className="capitalize">{comparison.category}</span>
                       {comparison.entries[0].strain && (
-                        <span>• {comparison.entries[0].strain}</span>
+                        <span>&bull; {comparison.entries[0].strain}</span>
                       )}
                       {comparison.entries[0].weight && (
-                        <span>• {comparison.entries[0].weight}</span>
+                        <span>&bull; {comparison.entries[0].weight}</span>
                       )}
                     </div>
                   </div>
@@ -144,14 +132,10 @@ export default function ComparePage() {
                             : "border-stone-200 bg-stone-50"
                         }`}
                       >
-                        <p className="font-medium text-stone-800">
-                          {entry.dispensary}
-                        </p>
+                        <p className="font-medium text-stone-800">{entry.dispensary}</p>
                         <p className="text-2xl font-bold mt-1">${entry.price}</p>
                         {entry.thc && (
-                          <p className="text-sm text-stone-500 mt-1">
-                            THC: {entry.thc}
-                          </p>
+                          <p className="text-sm text-stone-500 mt-1">THC: {entry.thc}</p>
                         )}
                         {entry.price === minPrice && (
                           <span className="inline-block mt-2 text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full">
